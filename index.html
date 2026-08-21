@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaOptima - Dashboard Correção</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0b1320;
+            color: #ffffff;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* BARRA LATERAL (SIDEBAR) */
+        .sidebar {
+            width: 240px;
+            background-color: #0f1a2c;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #1a2a42;
+        }
+
+        .logo-container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-text {
+            color: #004d61;
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1.1;
+        }
+
+        .logo-sub {
+            color: #333333;
+            font-size: 9px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #8fa0dd;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .menu-item.active a,
+        .menu-item a:hover {
+            background-color: #1a2a42;
+            color: #ffffff;
+        }
+
+        .menu-icon {
+            font-size: 16px;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* HEADER */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 450px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background-color: #152238;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px 12px 40px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .time-display {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .header-icon {
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e63946;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #008fa0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-info .role {
+            font-size: 11px;
+            color: #62728d;
+        }
+
+        /* GRID DOS CARDS INDICADORES */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .kpi-card {
+            background-color: #152238;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .kpi-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background-color: #008fa0;
+        }
+
+        .kpi-title {
+            color: #8fa0dd;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* CONTAINER DE GRÁFICOS (HTML PURO) */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .chart-box {
+            background-color: #152238;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .chart-year {
+            font-size: 12px;
+            color: #62728d;
+        }
+
+        /* SIMULAÇÃO DE GRÁFICO DE BARRAS DE PRODUÇÃO MENSAL */
+        .pure-chart-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 220px;
+            padding: 0 10px;
+            border-bottom: 2px solid #1a2a42;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+            gap: 8px;
+        }
+
+        .actual-bar {
+            width: 100%;
+            background: linear-gradient(180deg, #00bdcc 0%, rgba(0, 189, 204, 0.2) 100%);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            font-size: 12px;
+            color: #62728d;
+            margin-top: 8px;
+        }
+
+        /* SIMULAÇÃO DO GRÁFICO DE DISTRIBUIÇÃO */
+        .distribution-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .dist-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dist-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background-color: #0f1a2c;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <div class="logo-text">⚙️ Pharma<br>Optima</div>
+            <div class="logo-sub">Gestão Inteligente de Estoque Farmacêutico</div>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item active"><a href="#"><span class="menu-icon">📊</span> Dashboard</a></li>
+            <li class="menu-item"><a href="#"><span class="menu-icon">📦</span> Estoque</a></li>
+            <li class="menu-item"><a href="#"><span class="menu-icon">📄</span> Relatórios</a></li>
+            <li class="menu-item"><a href="#"><span class="menu-icon">🎯</span> Metas</a></li>
+            <li class="menu-item"><a href="#"><span class="menu-icon">👥</span> Funcionários</a></li>
+            <li class="menu-item"><a href="#"><span class="menu-icon">⚙️</span> Configurações</a></li>
+        </ul>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-content">
+
+        <!-- BARRA SUPERIOR -->
+        <div class="top-header">
+            <div class="search-box">
+                <input type="text" placeholder="Pesquisar medicamentos, relatórios...">
+            </div>
+            <div class="profile-section">
+                <div class="time-display">08:19</div>
+                <div class="header-icon">🔔<span class="badge">3</span></div>
+                <div class="header-icon">🌙</div>
+                <div class="user-profile">
+                    <div class="user-avatar">👨‍💼</div>
+                    <div class="user-info">
+                        <div class="name">Administrador</div>
+                        <div class="role">Pharma Optima</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARDS COM INDICADORES -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper">💊</div>
+                <div class="kpi-title">Produtos</div>
+                <div class="kpi-value">1.240</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper">📈</div>
+                <div class="kpi-title">Crescimento</div>
+                <div class="kpi-value">+12%</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper">🏭</div>
+                <div class="kpi-title">Produção</div>
+                <div class="kpi-value">84%</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon-wrapper">👥</div>
